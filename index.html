@@ -1,52 +1,120 @@
-<!--
-  KeyShotXR
-  (c) Copyright 2012-2017 Luxion ApS - All Rights Reserved.
--->
-
 <!DOCTYPE html>
 <html xmlns='http://www.w3.org/1999/xhtml'>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
     <title>KeyShotXR</title>
     <style type="text/css">
-      body { -ms-touch-action: none; }
+      body {
+        margin: 0;
+        padding: 0;
+        background: #000;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        overflow: hidden;
+        -ms-touch-action: none;
+      }
+
+      #KeyShotXR {
+        max-width: 100%;
+        width: 100%;
+        height: auto;
+      }
+
+      #controls {
+        margin-top: 10px;
+        display: flex;
+        gap: 10px;
+      }
+
+      .zoom-button {
+        padding: 10px 20px;
+        font-size: 16px;
+        border: none;
+        background: #444;
+        color: #fff;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .zoom-button:hover {
+        background: #666;
+      }
     </style>
     <script type="text/javascript" src="Delta 930 kaif.147/files/KeyShotXR.js"></script>
     <script type="text/javascript">
       var keyshotXR;
 
       function initKeyShotXR() {
-        var nameOfDiv = "KeyShotXR";
-        var folderName = "Delta 930 kaif.147";
-        var viewPortWidth = 1920;
-        var viewPortHeight = 1920;
-        var backgroundColor = "#000000";
-        var uCount = 20;
-        var vCount = 20;
-        var uWrap = true;
-        var vWrap = false;
-        var uMouseSensitivity = -0.0555556;
-        var vMouseSensitivity = 0.125;
-        var uStartIndex = 10;
-        var vStartIndex = 10;
-        var minZoom = 0.7;
-        var maxZoom = 1;
-        var rotationDamping = 0.96;
-        var downScaleToBrowser = false;
-        var addDownScaleGUIButton = false;
-        var downloadOnInteraction = false;
-        var imageExtension = "webp";
-        var showLoading = false;
-        var loadingIcon = "ba.png"; // Set to empty string for default icon.
-        var allowFullscreen = true; // Double-click in desktop browsers for fullscreen.
-        var uReverse = false;
-        var vReverse = false;
-        var hotspots = {};
-        var isIBooksWidget = false;
-        
-        keyshotXR = new keyshotXR(nameOfDiv,folderName,viewPortWidth,viewPortHeight,backgroundColor,uCount,vCount,uWrap,vWrap,uMouseSensitivity,vMouseSensitivity,uStartIndex,vStartIndex,minZoom,maxZoom,rotationDamping,downScaleToBrowser,addDownScaleGUIButton,downloadOnInteraction,imageExtension,showLoading,loadingIcon,allowFullscreen,uReverse,vReverse,hotspots,isIBooksWidget);
+        const nameOfDiv = "KeyShotXR";
+        const folderName = "Delta 930 kaif.147";
+        const viewPortWidth = window.innerWidth;
+        const viewPortHeight = window.innerWidth; // Keep it square
+        const backgroundColor = "#000000";
+        const uCount = 20;
+        const vCount = 20;
+        const uWrap = true;
+        const vWrap = false;
+        const uMouseSensitivity = -0.0555556;
+        const vMouseSensitivity = 0.125;
+        const uStartIndex = 10;
+        const vStartIndex = 10;
+        const minZoom = 0.5;
+        const maxZoom = 2;
+        const rotationDamping = 0.96;
+        const downScaleToBrowser = false;
+        const addDownScaleGUIButton = false;
+        const downloadOnInteraction = false;
+        const imageExtension = "webp";
+        const showLoading = false;
+        const loadingIcon = "ba.png";
+        const allowFullscreen = true;
+        const uReverse = false;
+        const vReverse = false;
+        const hotspots = {};
+        const isIBooksWidget = false;
+
+        keyshotXR = new keyshotXR(
+          nameOfDiv,
+          folderName,
+          viewPortWidth,
+          viewPortHeight,
+          backgroundColor,
+          uCount,
+          vCount,
+          uWrap,
+          vWrap,
+          uMouseSensitivity,
+          vMouseSensitivity,
+          uStartIndex,
+          vStartIndex,
+          minZoom,
+          maxZoom,
+          rotationDamping,
+          downScaleToBrowser,
+          addDownScaleGUIButton,
+          downloadOnInteraction,
+          imageExtension,
+          showLoading,
+          loadingIcon,
+          allowFullscreen,
+          uReverse,
+          vReverse,
+          hotspots,
+          isIBooksWidget
+        );
+      }
+
+      function zoomIn() {
+        keyshotXR.zoom(1.1); // Increase zoom by 10%
+      }
+
+      function zoomOut() {
+        keyshotXR.zoom(0.9); // Decrease zoom by 10%
       }
 
       window.onload = initKeyShotXR;
@@ -54,5 +122,9 @@
   </head>
   <body oncontextmenu="return false;">
     <div id="KeyShotXR"></div>
+    <div id="controls">
+      <button class="zoom-button" onclick="zoomIn()">Zoom In</button>
+      <button class="zoom-button" onclick="zoomOut()">Zoom Out</button>
+    </div>
   </body>
 </html>
