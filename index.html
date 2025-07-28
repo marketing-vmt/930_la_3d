@@ -1,43 +1,53 @@
 <!DOCTYPE html>
-<html xmlns='http://www.w3.org/1999/xhtml'>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
     <title>KeyShotXR</title>
-    <style type="text/css">
-      body {
+    <style>
+      html, body {
         margin: 0;
         padding: 0;
-        background: #000;
+        height: 100%;
+        width: 100%;
+        background: transparent;
+        overflow: hidden;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        height: 100vh;
-        overflow: hidden;
-        -ms-touch-action: none;
+        touch-action: none;
       }
 
       #KeyShotXR {
-        max-width: 100%;
         width: 100%;
-        height: auto;
+        max-width: 1000px;
+        aspect-ratio: 1/1;
+        touch-action: pinch-zoom;
+        background: transparent;
+      }
+
+      @media (max-width: 768px) {
+        #KeyShotXR {
+          max-width: 95%;
+        }
       }
 
       #controls {
-        margin-top: 10px;
         display: flex;
-        gap: 10px;
+        justify-content: center;
+        margin-top: 10px;
+        gap: 12px;
       }
 
       .zoom-button {
-        padding: 10px 20px;
-        font-size: 16px;
-        border: none;
         background: #444;
         color: #fff;
-        border-radius: 5px;
+        border: none;
+        padding: 10px 16px;
+        font-size: 16px;
+        border-radius: 6px;
         cursor: pointer;
       }
 
@@ -45,16 +55,18 @@
         background: #666;
       }
     </style>
+
     <script type="text/javascript" src="Delta 930 kaif.147/files/KeyShotXR.js"></script>
     <script type="text/javascript">
-      var keyshotXR;
+      let keyshotXR;
+      let isFullscreen = false;
 
       function initKeyShotXR() {
         const nameOfDiv = "KeyShotXR";
         const folderName = "Delta 930 kaif.147";
         const viewPortWidth = window.innerWidth;
-        const viewPortHeight = window.innerWidth; // Keep it square
-        const backgroundColor = "#000000";
+        const viewPortHeight = window.innerWidth;
+        const backgroundColor = "transparent"; // make background transparent
         const uCount = 20;
         const vCount = 20;
         const uWrap = true;
@@ -71,7 +83,7 @@
         const downloadOnInteraction = false;
         const imageExtension = "webp";
         const showLoading = false;
-        const loadingIcon = "ba.png";
+        const loadingIcon = "";
         const allowFullscreen = true;
         const uReverse = false;
         const vReverse = false;
@@ -107,17 +119,45 @@
           hotspots,
           isIBooksWidget
         );
+
+        // Subtle auto-rotate
+        setInterval(() => {
+          if (keyshotXR && typeof keyshotXR.spin === "function") {
+            keyshotXR.spin(0.5, 0); // x-axis only
+          }
+        }, 50);
       }
 
       function zoomIn() {
-        keyshotXR.zoom(1.1); // Increase zoom by 10%
+        if (keyshotXR?.zoom) keyshotXR.zoom(1.1);
       }
 
       function zoomOut() {
-        keyshotXR.zoom(0.9); // Decrease zoom by 10%
+        if (keyshotXR?.zoom) keyshotXR.zoom(0.9);
+      }
+
+      function toggleFullscreen() {
+        const el = document.documentElement;
+        if (!isFullscreen) {
+          el.requestFullscreen?.() || el.webkitRequestFullscreen?.() || el.msRequestFullscreen?.();
+        } else {
+          document.exitFullscreen?.() || document.webkitExitFullscreen?.() || document.msExitFullscreen?.();
+        }
+        isFullscreen = !isFullscreen;
       }
 
       window.onload = initKeyShotXR;
+
+      // Mobile double-tap for fullscreen
+      let lastTap = 0;
+      document.addEventListener("touchend", function (e) {
+        const currentTime = new Date().getTime();
+        if (currentTime - lastTap < 300) toggleFullscreen();
+        lastTap = currentTime;
+      });
+
+      // Desktop double-click
+      document.addEventListener("dblclick", toggleFullscreen);
     </script>
   </head>
   <body oncontextmenu="return false;">
