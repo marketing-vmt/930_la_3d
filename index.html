@@ -27,12 +27,12 @@
       
       .container {
         width: 100%;
-        max-width: min(90vw, 90vh);
+        max-width: min(95vw, 95vh);
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        padding: 20px;
+        padding: 10px;
         animation: slideInFromLeft 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
         opacity: 0;
         transform: translateX(-100px);
@@ -104,12 +104,14 @@
       /* Mobile-specific styles */
       @media (max-width: 768px) {
         .container {
-          max-width: 95vw;
-          padding: 15px;
+          max-width: 98vw;
+          padding: 5px;
         }
         
         #KeyShotXR {
           border-radius: 8px;
+          width: 100%;
+          min-height: 85vw;
         }
         
         #controls {
@@ -128,8 +130,13 @@
       /* Very small screens */
       @media (max-width: 480px) {
         .container {
-          max-width: 98vw;
-          padding: 10px;
+          max-width: 100vw;
+          padding: 5px;
+        }
+        
+        #KeyShotXR {
+          width: 100%;
+          min-height: 90vw;
         }
         
         #controls {
@@ -203,10 +210,17 @@
         const nameOfDiv = "KeyShotXR";
         const folderName = "Delta 930 kaif.147";
         
-        // Responsive viewport sizing
+        // Responsive viewport sizing - larger for mobile
         const container = document.querySelector('.container');
         const containerRect = container.getBoundingClientRect();
-        const viewerSize = Math.min(containerRect.width - 40, window.innerHeight * 0.6);
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        
+        let viewerSize;
+        if (isMobile) {
+          viewerSize = Math.min(window.innerWidth * 0.95, window.innerHeight * 0.8);
+        } else {
+          viewerSize = Math.min(containerRect.width - 40, window.innerHeight * 0.6);
+        }
         
         const viewPortWidth = viewerSize;
         const viewPortHeight = viewerSize;
@@ -217,11 +231,10 @@
         const vWrap = false;
         
         // Adjusted sensitivity for mobile
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         const uMouseSensitivity = isMobile ? -0.08 : -0.0555556;
         const vMouseSensitivity = isMobile ? 0.15 : 0.125;
         
-        const uStartIndex = 10;
+        const uStartIndex = 8; // Start 2 frames to the left
         const vStartIndex = 10;
         const minZoom = 0.3;
         const maxZoom = 3;
