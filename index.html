@@ -2,34 +2,38 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>KeyShotXR Tailwind Viewer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>KeyShotXR Tailwind Full View</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script type="text/javascript" src="Delta 930 kaif.147/files/KeyShotXR.js"></script>
+    <script src="Delta 930 kaif.147/files/KeyShotXR.js"></script>
     <style>
-      body {
-        background-color: black;
+      html, body {
+        margin: 0;
+        padding: 0;
+        background: black;
+        width: 100%;
+        height: 100%;
+        touch-action: manipulation;
         overflow: hidden;
-        -webkit-user-select: none;
-        user-select: none;
       }
 
       #KeyShotXR {
-        aspect-ratio: 1 / 1;
-      }
-
-      /* Prevent default pinch zoom */
-      html, body {
-        touch-action: manipulation;
+        width: 100vw;
+        height: 100vh;
+        max-width: 100vw;
+        max-height: 100vh;
+        margin: auto;
+        display: block;
+        background: transparent;
       }
     </style>
   </head>
-  <body class="flex items-center justify-center h-screen w-screen relative">
+  <body class="relative">
 
-    <!-- KeyShotXR Viewer -->
-    <div id="KeyShotXR" class="w-[90vw] max-w-[800px] mx-auto"></div>
+    <!-- KeyShotXR Canvas -->
+    <div id="KeyShotXR"></div>
 
-    <!-- Zoom Controls -->
+    <!-- Zoom Buttons -->
     <div class="absolute bottom-6 right-6 flex flex-col gap-4 z-50">
       <button onclick="zoomIn()" class="w-12 h-12 rounded-full border-2 border-white text-red-500 text-2xl flex items-center justify-center hover:bg-white/10">
         +
@@ -45,13 +49,13 @@
       ×
     </button>
 
-    <!-- Init Script -->
+    <!-- KeyShotXR Logic -->
     <script>
       let keyshotXR;
 
       function initKeyShotXR() {
         const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-        const viewerSize = Math.min(window.innerWidth * 0.95, window.innerHeight * 0.95);
+        const viewerSize = Math.min(window.innerWidth, window.innerHeight);
 
         keyshotXR = new keyshotXR(
           "KeyShotXR",
@@ -64,7 +68,7 @@
           isMobile ? -0.08 : -0.055,
           isMobile ? 0.15 : 0.125,
           8, 10,
-          0.3, 3,
+          0.3, 4,
           0.96,
           false, false, false,
           "webp",
@@ -76,12 +80,10 @@
           false
         );
 
-        // Auto-zoom on load
+        // Automatically zoom to max and center it
         setTimeout(() => {
-          if (keyshotXR?.zoom) {
-            keyshotXR.zoom(2.8);
-            keyshotXR.centerImage?.();
-          }
+          keyshotXR?.zoom?.(3.5); // Maximum zoom level
+          keyshotXR?.centerImage?.();
         }, 1000);
       }
 
@@ -89,7 +91,7 @@
       window.addEventListener("resize", () => keyshotXR?.resize?.());
       window.addEventListener("orientationchange", () => keyshotXR?.resize?.());
 
-      // Touch gesture restrictions
+      // Touch protection
       document.addEventListener("contextmenu", e => e.preventDefault());
       document.addEventListener("touchstart", e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
       document.addEventListener("touchmove", e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
