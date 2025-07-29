@@ -203,39 +203,8 @@
           isIBooksWidget
         );
 
-        // Simple initial zoom setup with mobile detection
-        const applyInitialZoom = () => {
-          if (keyshotXR && typeof keyshotXR.T === 'function') {
-            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            const zoomLevel = isMobile ? 2.5 : 3.8; // Less zoom on mobile
-            keyshotXR.T(zoomLevel);
-            console.log(`Initial zoom applied: ${zoomLevel}x using T() method (${isMobile ? 'mobile' : 'desktop'})`);
-            return true;
-          } else if (keyshotXR) {
-            console.log('KeyshotXR object exists but T method not available yet');
-            return false;
-          } else {
-            console.log('KeyshotXR object not ready yet');
-            return false;
-          }
-        };
-
-        // Try multiple times to ensure zoom is applied
-        let attempts = 0;
-        const maxAttempts = 15;
-        const tryZoom = () => {
-          attempts++;
-          if (applyInitialZoom()) {
-            console.log(`Initial zoom applied successfully after ${attempts} attempts`);
-          } else if (attempts < maxAttempts) {
-            setTimeout(tryZoom, 300);
-          } else {
-            console.log('Max attempts reached for initial zoom');
-          }
-        };
-        
-        // Start trying after initialization
-        setTimeout(tryZoom, 500);
+        // No automatic zoom - using default KeyshotXR zoom level
+        console.log('KeyshotXR initialized without automatic zoom');
 
       } catch (error) {
         console.error('KeyShotXR initialization error:', error);
