@@ -183,23 +183,44 @@
           isIBooksWidget
         );
 
-        // Auto zoom-in to match your desired initial view
-        // Using multiple attempts to ensure it works
-        const applyInitialZoom = () => {
-          if (keyshotXR && typeof keyshotXR.zoom === 'function') {
-            // Set to much higher zoom for closer initial view like your second image
-            keyshotXR.zoom(10);
-            console.log('Initial zoom applied: 2.8x');
+        // Wait for KeyshotXR to be fully ready before applying initial zoom
+        const waitForReady = () => {
+          if (keyshotXR && keyshotXR.isReady && typeof keyshotXR.zoom === 'function') {
+            // KeyshotXR is ready, apply zoom
+            keyshotXR.zoom(2.8);
+            console.log('Initial zoom applied: 2.8x (ready state)');
+            return true;
+          } else if (keyshotXR && typeof keyshotXR.zoom === 'function') {
+            // Method exists but might not be ready, try anyway
+            keyshotXR.zoom(2.8);
+            console.log('Initial zoom applied: 2.8x (method exists)');
+            return true;
+          } else if (keyshotXR) {
+            console.log('KeyshotXR object exists but zoom method not available yet');
+            console.log('Available methods:', Object.getOwnPropertyNames(keyshotXR));
+            return false;
           } else {
-            console.log('KeyshotXR zoom method not ready, retrying...');
+            console.log('KeyshotXR object not ready yet');
+            return false;
           }
         };
 
-        // Try multiple times with different delays to ensure it takes effect
-        // setTimeout(applyInitialZoom, 300);
-        // setTimeout(applyInitialZoom, 800);
-        // setTimeout(applyInitialZoom, 1200);
-        // setTimeout(applyInitialZoom, 2000);
+        // Try immediately and then keep trying until successful
+        let attempts = 0;
+        const maxAttempts = 20;
+        const tryZoom = () => {
+          attempts++;
+          if (waitForReady()) {
+            console.log(`Zoom applied successfully after ${attempts} attempts`);
+          } else if (attempts < maxAttempts) {
+            setTimeout(tryZoom, 200);
+          } else {
+            console.log('Max attempts reached, zoom may not have been applied');
+          }
+        };
+        
+        // Start trying after a short delay
+        setTimeout(tryZoom, 100);
 
       } catch (error) {
         console.error('KeyShotXR initialization error:', error);
