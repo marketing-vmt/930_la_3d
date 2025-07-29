@@ -188,7 +188,7 @@
         const applyInitialZoom = () => {
           if (keyshotXR && typeof keyshotXR.zoom === 'function') {
             // Set to much higher zoom for closer initial view like your second image
-            keyshotXR.zoom(2.8);
+            keyshotXR.zoom(10);
             console.log('Initial zoom applied: 2.8x');
           } else {
             console.log('KeyshotXR zoom method not ready, retrying...');
@@ -199,7 +199,7 @@
         // setTimeout(applyInitialZoom, 300);
         // setTimeout(applyInitialZoom, 800);
         // setTimeout(applyInitialZoom, 1200);
-        setTimeout(applyInitialZoom, 2000);
+        // setTimeout(applyInitialZoom, 2000);
 
       } catch (error) {
         console.error('KeyShotXR initialization error:', error);
