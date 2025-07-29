@@ -207,7 +207,7 @@
         const applyInitialZoom = () => {
           if (keyshotXR && typeof keyshotXR.T === 'function') {
             const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            const zoomLevel = isMobile ? 2.5 : 4; // Less zoom on mobile
+            const zoomLevel = isMobile ? 2.5 : 3.8; // Less zoom on mobile
             keyshotXR.T(zoomLevel);
             console.log(`Initial zoom applied: ${zoomLevel}x using T() method (${isMobile ? 'mobile' : 'desktop'})`);
             return true;
