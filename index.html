@@ -2,9 +2,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="author" content="Kaif">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+  <meta name="author" content="Kaif">
   <title>Delta 930 La</title>
 
   <style>
@@ -27,6 +27,26 @@
       aspect-ratio: 1 / 1;
       margin: auto;
       background: transparent;
+    }
+
+    /* Mobile-specific centering and sizing */
+    @media (max-width: 768px) {
+      html, body {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+      }
+
+      #KeyShotXR {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 95vw;
+        height: 95vw;
+        max-width: 95vh;
+        max-height: 95vh;
+      }
     }
 
     .circle-button {
@@ -184,62 +204,18 @@
           isIBooksWidget
         );
 
-        // Auto zoom-in to match your desired initial view
-        // Using multiple attempts to ensure it works
-        const applyInitialZoom = () => {
-          if (keyshotXR && typeof keyshotXR.zoom === 'function') {
-            // Set to much higher zoom for closer initial view like your second image
-            keyshotXR.zoom(2.8);
-            console.log('Initial zoom applied: 2.8x');
+        // Set initial zoom to 3.5x when KeyshotXR is ready
+        setTimeout(() => {
+          if (keyshotXR && typeof keyshotXR.T === 'function') {
+            keyshotXR.T(3.5);
+            console.log('Initial zoom set to 3.5x');
           } else {
-            console.log('KeyshotXR zoom method not ready, retrying...');
+            console.log('KeyshotXR T method not ready yet');
           }
-        };
-
-        // Try multiple times with different delays to ensure it takes effect
-        setTimeout(applyInitialZoom, 300);
-        setTimeout(applyInitialZoom, 800);
-        setTimeout(applyInitialZoom, 1200);
-        setTimeout(applyInitialZoom, 2000);
+        }, 100);
 
       } catch (error) {
         console.error('KeyShotXR initialization error:', error);
-      }
-    }
-
-    function zoomIn() {
-      console.log('Zoom in clicked');
-      if (keyshotXR) {
-        if (typeof keyshotXR.zoom === 'function') {
-          keyshotXR.zoom(1.3); // Increased zoom factor for more noticeable effect
-          console.log('Zoomed in');
-        } else if (typeof keyshotXR.zoomIn === 'function') {
-          keyshotXR.zoomIn();
-          console.log('Used zoomIn method');
-        } else {
-          console.log('No zoom method available');
-          console.log('Available methods:', Object.getOwnPropertyNames(keyshotXR));
-        }
-      } else {
-        console.log('KeyshotXR not initialized');
-      }
-    }
-
-    function zoomOut() {
-      console.log('Zoom out clicked');
-      if (keyshotXR) {
-        if (typeof keyshotXR.zoom === 'function') {
-          keyshotXR.zoom(0.7); // Decreased zoom factor for more noticeable effect
-          console.log('Zoomed out');
-        } else if (typeof keyshotXR.zoomOut === 'function') {
-          keyshotXR.zoomOut();
-          console.log('Used zoomOut method');
-        } else {
-          console.log('No zoom method available');
-          console.log('Available methods:', Object.getOwnPropertyNames(keyshotXR));
-        }
-      } else {
-        console.log('KeyshotXR not initialized');
       }
     }
 
@@ -279,12 +255,5 @@
 </head>
 <body>
   <div id="KeyShotXR"></div>
-
-  <div class="floating-controls">
-    <button class="circle-button" onclick="zoomIn()" title="Zoom In">+</button>
-    <button class="circle-button" onclick="zoomOut()" title="Zoom Out">−</button>
-  </div>
-
-  <button class="close-button" onclick="closeViewer()" title="Close">×</button>
 </body>
 </html>
