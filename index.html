@@ -183,20 +183,15 @@
           isIBooksWidget
         );
 
-        // Wait for KeyshotXR to be fully ready before applying initial zoom
-        const waitForReady = () => {
-          if (keyshotXR && keyshotXR.isReady && typeof keyshotXR.zoom === 'function') {
-            // KeyshotXR is ready, apply zoom
-            keyshotXR.zoom(2.8);
-            console.log('Initial zoom applied: 2.8x (ready state)');
-            return true;
-          } else if (keyshotXR && typeof keyshotXR.zoom === 'function') {
-            // Method exists but might not be ready, try anyway
-            keyshotXR.zoom(2.8);
-            console.log('Initial zoom applied: 2.8x (method exists)');
+        // Apply initial zoom using the correct KeyshotXR API
+        const applyInitialZoom = () => {
+          if (keyshotXR && typeof keyshotXR.T === 'function') {
+            // T() is the zoom method, set to high zoom for close-up view
+            keyshotXR.T(2.8);
+            console.log('Initial zoom applied: 2.8x using T() method');
             return true;
           } else if (keyshotXR) {
-            console.log('KeyshotXR object exists but zoom method not available yet');
+            console.log('KeyshotXR object exists but T method not available yet');
             console.log('Available methods:', Object.getOwnPropertyNames(keyshotXR));
             return false;
           } else {
@@ -205,22 +200,22 @@
           }
         };
 
-        // Try immediately and then keep trying until successful
+        // Try multiple times to ensure zoom is applied
         let attempts = 0;
-        const maxAttempts = 20;
+        const maxAttempts = 15;
         const tryZoom = () => {
           attempts++;
-          if (waitForReady()) {
-            console.log(`Zoom applied successfully after ${attempts} attempts`);
+          if (applyInitialZoom()) {
+            console.log(`Initial zoom applied successfully after ${attempts} attempts`);
           } else if (attempts < maxAttempts) {
-            setTimeout(tryZoom, 200);
+            setTimeout(tryZoom, 300);
           } else {
-            console.log('Max attempts reached, zoom may not have been applied');
+            console.log('Max attempts reached for initial zoom');
           }
         };
         
-        // Start trying after a short delay
-        setTimeout(tryZoom, 100);
+        // Start trying after initialization
+        setTimeout(tryZoom, 500);
 
       } catch (error) {
         console.error('KeyShotXR initialization error:', error);
@@ -229,37 +224,31 @@
 
     function zoomIn() {
       console.log('Zoom in clicked');
-      if (keyshotXR) {
-        if (typeof keyshotXR.zoom === 'function') {
-          keyshotXR.zoom(1.3); // Increased zoom factor for more noticeable effect
-          console.log('Zoomed in');
-        } else if (typeof keyshotXR.zoomIn === 'function') {
-          keyshotXR.zoomIn();
-          console.log('Used zoomIn method');
-        } else {
-          console.log('No zoom method available');
+      if (keyshotXR && typeof keyshotXR.T === 'function' && typeof keyshotXR.w === 'function') {
+        const currentZoom = keyshotXR.w();
+        const newZoom = currentZoom * 1.3;
+        keyshotXR.T(newZoom);
+        console.log(`Zoomed in from ${currentZoom.toFixed(2)} to ${newZoom.toFixed(2)}`);
+      } else {
+        console.log('KeyshotXR zoom methods not available');
+        if (keyshotXR) {
           console.log('Available methods:', Object.getOwnPropertyNames(keyshotXR));
         }
-      } else {
-        console.log('KeyshotXR not initialized');
       }
     }
 
     function zoomOut() {
       console.log('Zoom out clicked');
-      if (keyshotXR) {
-        if (typeof keyshotXR.zoom === 'function') {
-          keyshotXR.zoom(0.7); // Decreased zoom factor for more noticeable effect
-          console.log('Zoomed out');
-        } else if (typeof keyshotXR.zoomOut === 'function') {
-          keyshotXR.zoomOut();
-          console.log('Used zoomOut method');
-        } else {
-          console.log('No zoom method available');
+      if (keyshotXR && typeof keyshotXR.T === 'function' && typeof keyshotXR.w === 'function') {
+        const currentZoom = keyshotXR.w();
+        const newZoom = currentZoom * 0.7;
+        keyshotXR.T(newZoom);
+        console.log(`Zoomed out from ${currentZoom.toFixed(2)} to ${newZoom.toFixed(2)}`);
+      } else {
+        console.log('KeyshotXR zoom methods not available');
+        if (keyshotXR) {
           console.log('Available methods:', Object.getOwnPropertyNames(keyshotXR));
         }
-      } else {
-        console.log('KeyshotXR not initialized');
       }
     }
 
