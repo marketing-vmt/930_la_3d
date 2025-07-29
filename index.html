@@ -203,8 +203,11 @@
           isIBooksWidget
         );
 
-        // No automatic zoom - using default KeyshotXR zoom level
-        console.log('KeyshotXR initialized without automatic zoom');
+        // Set initial zoom to 3.5x immediately when ready
+        if (keyshotXR && typeof keyshotXR.T === 'function') {
+          keyshotXR.T(3.5);
+          console.log('Initial zoom set to 3.5x immediately');
+        }
 
       } catch (error) {
         console.error('KeyShotXR initialization error:', error);
