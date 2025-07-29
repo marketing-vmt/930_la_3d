@@ -28,26 +28,6 @@
       background: transparent;
     }
 
-    /* Mobile-specific centering and sizing */
-    @media (max-width: 768px) {
-      html, body {
-        position: fixed;
-        width: 100%;
-        height: 100%;
-      }
-
-      #KeyShotXR {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 95vw;
-        height: 95vw;
-        max-width: 95vh;
-        max-height: 95vh;
-      }
-    }
-
     .circle-button {
       width: 50px;
       height: 50px;
@@ -119,13 +99,11 @@
         height: 44px;
         font-size: 22px;
       }
-
       .close-button {
         width: 40px;
         height: 40px;
         font-size: 22px;
       }
-
       .floating-controls {
         bottom: 15px;
         right: 15px;
@@ -136,12 +114,14 @@
 
   <script type="text/javascript" src="Delta 930 kaif.147/files/KeyShotXR.js"></script>
   <script type="text/javascript">
-    var keyshotXR;
+    // ✨ CHANGE 1: Use a different variable name for the instance to avoid confusion
+    // with the KeyShotXR constructor.
+    var kxrInstance; 
+    const zoomStep = 1.3; // Define a zoom step for the buttons
 
     function initKeyShotXR() {
       const nameOfDiv = "KeyShotXR";
       const folderName = "Delta 930 kaif.147";
-
       const viewerSize = Math.min(window.innerWidth * 0.95, window.innerHeight * 0.95);
       const viewPortWidth = viewerSize;
       const viewPortHeight = viewerSize;
@@ -150,11 +130,9 @@
       const vCount = 20;
       const uWrap = true;
       const vWrap = false;
-
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       const uMouseSensitivity = isMobile ? -0.08 : -0.055;
       const vMouseSensitivity = isMobile ? 0.15 : 0.125;
-
       const uStartIndex = 8;
       const vStartIndex = 10;
       const minZoom = 0.3;
@@ -173,7 +151,8 @@
       const isIBooksWidget = false;
 
       try {
-        keyshotXR = new keyshotXR(
+        // ✨ CHANGE 2 (CRITICAL): Use the correct capitalized constructor name 'KeyShotXR'.
+        kxrInstance = new KeyShotXR(
           nameOfDiv,
           folderName,
           viewPortWidth,
@@ -203,18 +182,40 @@
           isIBooksWidget
         );
 
-        // Set initial zoom to 3.5x when KeyshotXR is ready
-        setTimeout(() => {
-          if (keyshotXR && typeof keyshotXR.T === 'function') {
-            keyshotXR.T(3.5);
-            console.log('Initial zoom set to 3.5x');
+        // ✨ CHANGE 3: A more reliable way to apply initial zoom.
+        // This function waits for the viewer to be ready before trying to zoom.
+        const applyInitialZoomWhenReady = (retries = 10) => {
+          if (kxrInstance && typeof kxrInstance.setZoom === 'function') {
+            kxrInstance.setZoom(2.8); // Use setZoom for an absolute value
+            console.log('Initial zoom applied: 2.8x');
+          } else if (retries > 0) {
+            console.log('KeyShotXR not ready, retrying...');
+            setTimeout(() => applyInitialZoomWhenReady(retries - 1), 500);
           } else {
-            console.log('KeyshotXR T method not ready yet');
+            console.log('Could not apply initial zoom.');
           }
-        }, 100);
+        };
+        applyInitialZoomWhenReady();
 
       } catch (error) {
         console.error('KeyShotXR initialization error:', error);
+      }
+    }
+    
+    // ✨ CHANGE 4: Improved zoom functions for a smoother experience.
+    // The original `zoom(0.7)` would always jump to 0.7x zoom.
+    // This new logic zooms relative to the current level.
+    function zoomIn() {
+      if (kxrInstance && typeof kxrInstance.zoom === 'function') {
+        kxrInstance.zoom(zoomStep); // Zooms in by the factor
+        console.log('Zoomed in');
+      }
+    }
+
+    function zoomOut() {
+      if (kxrInstance && typeof kxrInstance.zoom === 'function') {
+        kxrInstance.zoom(1 / zoomStep); // Zooms out by the factor
+        console.log('Zoomed out');
       }
     }
 
@@ -222,7 +223,6 @@
       if (window.opener) {
         window.close();
       } else {
-        // Alternative for when window.close() doesn't work
         window.location.href = 'about:blank';
       }
     }
@@ -230,29 +230,36 @@
     // Event listeners
     window.addEventListener("load", initKeyShotXR);
     window.addEventListener("resize", () => {
-      if (keyshotXR && typeof keyshotXR.resize === 'function') {
-        keyshotXR.resize();
+      if (kxrInstance && typeof kxrInstance.resize === 'function') {
+        kxrInstance.resize();
       }
     });
     window.addEventListener("orientationchange", () => {
       setTimeout(() => {
-        if (keyshotXR && typeof keyshotXR.resize === 'function') {
-          keyshotXR.resize();
+        if (kxrInstance && typeof kxrInstance.resize === 'function') {
+          kxrInstance.resize();
         }
       }, 100);
     });
 
     // Prevent context menu and multi-touch
     document.addEventListener("contextmenu", e => e.preventDefault());
-    document.addEventListener("touchstart", e => { 
-      if (e.touches.length > 1) e.preventDefault(); 
+    document.addEventListener("touchstart", e => {
+      if (e.touches.length > 1) e.preventDefault();
     }, { passive: false });
-    document.addEventListener("touchmove", e => { 
-      if (e.touches.length > 1) e.preventDefault(); 
+    document.addEventListener("touchmove", e => {
+      if (e.touches.length > 1) e.preventDefault();
     }, { passive: false });
   </script>
 </head>
 <body>
   <div id="KeyShotXR"></div>
+
+  <div class="floating-controls">
+    <button class="circle-button" onclick="zoomIn()" title="Zoom In">+</button>
+    <button class="circle-button" onclick="zoomOut()" title="Zoom Out">−</button>
+  </div>
+
+  <button class="close-button" onclick="closeViewer()" title="Close">×</button>
 </body>
 </html>
