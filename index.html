@@ -35,17 +35,24 @@
       font-size: 26px;
       font-weight: bold;
       border: 2px solid white;
-      color: red;
-      background: transparent;
+      color: white;
+      background: rgba(0, 0, 0, 0.5);
       cursor: pointer;
-      transition: background 0.3s ease;
+      transition: all 0.3s ease;
       display: flex;
       align-items: center;
       justify-content: center;
+      user-select: none;
     }
 
     .circle-button:hover {
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.2);
+      color: #ff4444;
+      transform: scale(1.1);
+    }
+
+    .circle-button:active {
+      transform: scale(0.95);
     }
 
     .floating-controls {
@@ -68,15 +75,22 @@
       font-size: 24px;
       font-weight: bold;
       border: 2px solid white;
-      color: red;
-      background: transparent;
+      color: white;
+      background: rgba(0, 0, 0, 0.5);
       cursor: pointer;
       z-index: 999;
-      transition: background 0.3s ease;
+      transition: all 0.3s ease;
+      user-select: none;
     }
 
     .close-button:hover {
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.2);
+      color: #ff4444;
+      transform: scale(1.1);
+    }
+
+    .close-button:active {
+      transform: scale(0.95);
     }
 
     @media (max-width: 480px) {
@@ -90,6 +104,12 @@
         width: 40px;
         height: 40px;
         font-size: 22px;
+      }
+
+      .floating-controls {
+        bottom: 15px;
+        right: 15px;
+        gap: 12px;
       }
     }
   </style>
@@ -163,12 +183,22 @@
           isIBooksWidget
         );
 
-        // Optional: auto zoom-in on load
-        setTimeout(() => {
-          if (keyshotXR && keyshotXR.zoom) {
-            keyshotXR.zoom(1.5);
+        // Auto zoom-in to match your desired initial view
+        // Using multiple attempts to ensure it works
+        const applyInitialZoom = () => {
+          if (keyshotXR && typeof keyshotXR.zoom === 'function') {
+            // Set to approximately 2x zoom for closer initial view
+            keyshotXR.zoom(2.0);
+            console.log('Initial zoom applied');
+          } else {
+            console.log('KeyshotXR zoom method not ready, retrying...');
           }
-        }, 1000);
+        };
+
+        // Try multiple times with different delays
+        setTimeout(applyInitialZoom, 500);
+        setTimeout(applyInitialZoom, 1000);
+        setTimeout(applyInitialZoom, 1500);
 
       } catch (error) {
         console.error('KeyShotXR initialization error:', error);
@@ -176,30 +206,83 @@
     }
 
     function zoomIn() {
-      if (keyshotXR && keyshotXR.zoom) keyshotXR.zoom(1.2);
+      console.log('Zoom in clicked');
+      if (keyshotXR) {
+        if (typeof keyshotXR.zoom === 'function') {
+          keyshotXR.zoom(1.3); // Increased zoom factor for more noticeable effect
+          console.log('Zoomed in');
+        } else if (typeof keyshotXR.zoomIn === 'function') {
+          keyshotXR.zoomIn();
+          console.log('Used zoomIn method');
+        } else {
+          console.log('No zoom method available');
+          console.log('Available methods:', Object.getOwnPropertyNames(keyshotXR));
+        }
+      } else {
+        console.log('KeyshotXR not initialized');
+      }
     }
 
     function zoomOut() {
-      if (keyshotXR && keyshotXR.zoom) keyshotXR.zoom(0.8);
+      console.log('Zoom out clicked');
+      if (keyshotXR) {
+        if (typeof keyshotXR.zoom === 'function') {
+          keyshotXR.zoom(0.7); // Decreased zoom factor for more noticeable effect
+          console.log('Zoomed out');
+        } else if (typeof keyshotXR.zoomOut === 'function') {
+          keyshotXR.zoomOut();
+          console.log('Used zoomOut method');
+        } else {
+          console.log('No zoom method available');
+          console.log('Available methods:', Object.getOwnPropertyNames(keyshotXR));
+        }
+      } else {
+        console.log('KeyshotXR not initialized');
+      }
     }
 
-    window.addEventListener("load", initKeyShotXR);
-    window.addEventListener("resize", () => keyshotXR?.resize?.());
-    window.addEventListener("orientationchange", () => keyshotXR?.resize?.());
+    function closeViewer() {
+      if (window.opener) {
+        window.close();
+      } else {
+        // Alternative for when window.close() doesn't work
+        window.location.href = 'about:blank';
+      }
+    }
 
+    // Event listeners
+    window.addEventListener("load", initKeyShotXR);
+    window.addEventListener("resize", () => {
+      if (keyshotXR && typeof keyshotXR.resize === 'function') {
+        keyshotXR.resize();
+      }
+    });
+    window.addEventListener("orientationchange", () => {
+      setTimeout(() => {
+        if (keyshotXR && typeof keyshotXR.resize === 'function') {
+          keyshotXR.resize();
+        }
+      }, 100);
+    });
+
+    // Prevent context menu and multi-touch
     document.addEventListener("contextmenu", e => e.preventDefault());
-    document.addEventListener("touchstart", e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
-    document.addEventListener("touchmove", e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
+    document.addEventListener("touchstart", e => { 
+      if (e.touches.length > 1) e.preventDefault(); 
+    }, { passive: false });
+    document.addEventListener("touchmove", e => { 
+      if (e.touches.length > 1) e.preventDefault(); 
+    }, { passive: false });
   </script>
 </head>
 <body>
   <div id="KeyShotXR"></div>
 
   <div class="floating-controls">
-    <button class="circle-button" onclick="zoomIn()">+</button>
-    <button class="circle-button" onclick="zoomOut()">−</button>
+    <button class="circle-button" onclick="zoomIn()" title="Zoom In">+</button>
+    <button class="circle-button" onclick="zoomOut()" title="Zoom Out">−</button>
   </div>
 
-  <button class="close-button" onclick="window.close()">×</button>
+  <button class="close-button" onclick="closeViewer()" title="Close">×</button>
 </body>
 </html>
