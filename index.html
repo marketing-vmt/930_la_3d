@@ -1,207 +1,106 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-  <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-  <title>Responsive KeyShotXR Viewer</title>
-
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      background: black;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
-
-    #KeyShotXR {
-      display: block;
-      width: 100%;
-      height: auto;
-      max-width: 100vw;
-      max-height: 100vh;
-      aspect-ratio: 1 / 1;
-      margin: auto;
-      background: transparent;
-    }
-
-    .circle-button {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      font-size: 26px;
-      font-weight: bold;
-      border: 2px solid white;
-      color: red;
-      background: transparent;
-      cursor: pointer;
-      transition: background 0.3s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .circle-button:hover {
-      background: rgba(255, 255, 255, 0.1);
-    }
-
-    .floating-controls {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      z-index: 999;
-    }
-
-    .close-button {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      width: 45px;
-      height: 45px;
-      border-radius: 50%;
-      font-size: 24px;
-      font-weight: bold;
-      border: 2px solid white;
-      color: red;
-      background: transparent;
-      cursor: pointer;
-      z-index: 999;
-      transition: background 0.3s ease;
-    }
-
-    .close-button:hover {
-      background: rgba(255, 255, 255, 0.1);
-    }
-
-    @media (max-width: 480px) {
-      .circle-button {
-        width: 44px;
-        height: 44px;
-        font-size: 22px;
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KeyShotXR Tailwind Viewer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="text/javascript" src="Delta 930 kaif.147/files/KeyShotXR.js"></script>
+    <style>
+      body {
+        background-color: black;
+        overflow: hidden;
+        -webkit-user-select: none;
+        user-select: none;
       }
 
-      .close-button {
-        width: 40px;
-        height: 40px;
-        font-size: 22px;
+      #KeyShotXR {
+        aspect-ratio: 1 / 1;
       }
-    }
-  </style>
 
-  <script type="text/javascript" src="Delta 930 kaif.147/files/KeyShotXR.js"></script>
-  <script type="text/javascript">
-    var keyshotXR;
+      /* Prevent default pinch zoom */
+      html, body {
+        touch-action: manipulation;
+      }
+    </style>
+  </head>
+  <body class="flex items-center justify-center h-screen w-screen relative">
 
-    function initKeyShotXR() {
-      const nameOfDiv = "KeyShotXR";
-      const folderName = "Delta 930 kaif.147";
+    <!-- KeyShotXR Viewer -->
+    <div id="KeyShotXR" class="w-[90vw] max-w-[800px] mx-auto"></div>
 
-      const viewerSize = Math.min(window.innerWidth * 0.95, window.innerHeight * 0.95);
-      const viewPortWidth = viewerSize;
-      const viewPortHeight = viewerSize;
-      const backgroundColor = "transparent";
-      const uCount = 20;
-      const vCount = 20;
-      const uWrap = true;
-      const vWrap = false;
+    <!-- Zoom Controls -->
+    <div class="absolute bottom-6 right-6 flex flex-col gap-4 z-50">
+      <button onclick="zoomIn()" class="w-12 h-12 rounded-full border-2 border-white text-red-500 text-2xl flex items-center justify-center hover:bg-white/10">
+        +
+      </button>
+      <button onclick="zoomOut()" class="w-12 h-12 rounded-full border-2 border-white text-red-500 text-2xl flex items-center justify-center hover:bg-white/10">
+        −
+      </button>
+    </div>
 
-      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      const uMouseSensitivity = isMobile ? -0.08 : -0.055;
-      const vMouseSensitivity = isMobile ? 0.15 : 0.125;
+    <!-- Close Button -->
+    <button onclick="window.close()"
+      class="absolute top-6 right-6 w-10 h-10 rounded-full border-2 border-white text-red-500 text-xl flex items-center justify-center z-50 hover:bg-white/10">
+      ×
+    </button>
 
-      const uStartIndex = 8;
-      const vStartIndex = 10;
-      const minZoom = 0.3;
-      const maxZoom = 3;
-      const rotationDamping = 0.96;
-      const downScaleToBrowser = false;
-      const addDownScaleGUIButton = false;
-      const downloadOnInteraction = false;
-      const imageExtension = "webp";
-      const showLoading = true;
-      const loadingIcon = "ba.png";
-      const allowFullscreen = true;
-      const uReverse = false;
-      const vReverse = false;
-      const hotspots = {};
-      const isIBooksWidget = false;
+    <!-- Init Script -->
+    <script>
+      let keyshotXR;
 
-      try {
+      function initKeyShotXR() {
+        const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        const viewerSize = Math.min(window.innerWidth * 0.95, window.innerHeight * 0.95);
+
         keyshotXR = new keyshotXR(
-          nameOfDiv,
-          folderName,
-          viewPortWidth,
-          viewPortHeight,
-          backgroundColor,
-          uCount,
-          vCount,
-          uWrap,
-          vWrap,
-          uMouseSensitivity,
-          vMouseSensitivity,
-          uStartIndex,
-          vStartIndex,
-          minZoom,
-          maxZoom,
-          rotationDamping,
-          downScaleToBrowser,
-          addDownScaleGUIButton,
-          downloadOnInteraction,
-          imageExtension,
-          showLoading,
-          loadingIcon,
-          allowFullscreen,
-          uReverse,
-          vReverse,
-          hotspots,
-          isIBooksWidget
+          "KeyShotXR",
+          "Delta 930 kaif.147",
+          viewerSize,
+          viewerSize,
+          "transparent",
+          20, 20,
+          true, false,
+          isMobile ? -0.08 : -0.055,
+          isMobile ? 0.15 : 0.125,
+          8, 10,
+          0.3, 3,
+          0.96,
+          false, false, false,
+          "webp",
+          true,
+          "ba.png",
+          true,
+          false, false,
+          {},
+          false
         );
 
-        // Optional: auto zoom-in on load
+        // Auto-zoom on load
         setTimeout(() => {
-          if (keyshotXR && keyshotXR.zoom) {
-            keyshotXR.zoom(4);
-            keyshotXR.centerImage();
-
+          if (keyshotXR?.zoom) {
+            keyshotXR.zoom(2.8);
+            keyshotXR.centerImage?.();
           }
         }, 1000);
-
-      } catch (error) {
-        console.error('KeyShotXR initialization error:', error);
       }
-    }
 
-    function zoomIn() {
-      if (keyshotXR && keyshotXR.zoom) keyshotXR.zoom(1.2);
-    }
+      window.addEventListener("load", initKeyShotXR);
+      window.addEventListener("resize", () => keyshotXR?.resize?.());
+      window.addEventListener("orientationchange", () => keyshotXR?.resize?.());
 
-    function zoomOut() {
-      if (keyshotXR && keyshotXR.zoom) keyshotXR.zoom(0.8);
-    }
+      // Touch gesture restrictions
+      document.addEventListener("contextmenu", e => e.preventDefault());
+      document.addEventListener("touchstart", e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
+      document.addEventListener("touchmove", e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
 
-    window.addEventListener("load", initKeyShotXR);
-    window.addEventListener("resize", () => keyshotXR?.resize?.());
-    window.addEventListener("orientationchange", () => keyshotXR?.resize?.());
+      function zoomIn() {
+        keyshotXR?.zoom?.(1.2);
+      }
 
-    document.addEventListener("contextmenu", e => e.preventDefault());
-    document.addEventListener("touchstart", e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
-    document.addEventListener("touchmove", e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
-  </script>
-</head>
-<body>
-  <div id="KeyShotXR"></div>
-
-  <div class="floating-controls">
-    <button class="circle-button" onclick="zoomIn()">+</button>
-    <button class="circle-button" onclick="zoomOut()">−</button>
-  </div>
-
-  <button class="close-button" onclick="window.close()">×</button>
-</body>
+      function zoomOut() {
+        keyshotXR?.zoom?.(0.8);
+      }
+    </script>
+  </body>
 </html>
