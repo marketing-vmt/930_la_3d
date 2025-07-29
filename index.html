@@ -28,6 +28,26 @@
       background: transparent;
     }
 
+    /* Mobile-specific centering and sizing */
+    @media (max-width: 768px) {
+      html, body {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+      }
+
+      #KeyShotXR {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 95vw;
+        height: 95vw;
+        max-width: 95vh;
+        max-height: 95vh;
+      }
+    }
+
     .circle-button {
       width: 50px;
       height: 50px;
@@ -183,11 +203,13 @@
           isIBooksWidget
         );
 
-        // Simple initial zoom setup
+        // Simple initial zoom setup with mobile detection
         const applyInitialZoom = () => {
           if (keyshotXR && typeof keyshotXR.T === 'function') {
-            keyshotXR.T(4.2);
-            console.log('Initial zoom applied: 5x using T() method');
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            const zoomLevel = isMobile ? 2.5 : 4; // Less zoom on mobile
+            keyshotXR.T(zoomLevel);
+            console.log(`Initial zoom applied: ${zoomLevel}x using T() method (${isMobile ? 'mobile' : 'desktop'})`);
             return true;
           } else if (keyshotXR) {
             console.log('KeyshotXR object exists but T method not available yet');
