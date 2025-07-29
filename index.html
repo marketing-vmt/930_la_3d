@@ -187,7 +187,7 @@
         const applyInitialZoom = () => {
           if (keyshotXR && typeof keyshotXR.T === 'function') {
             // T() is the zoom method, set to high zoom for close-up view
-            keyshotXR.T(2.8);
+            keyshotXR.T(8);
             console.log('Initial zoom applied: 2.8x using T() method');
             return true;
           } else if (keyshotXR) {
