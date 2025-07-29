@@ -201,26 +201,26 @@
         };
 
         // Try multiple times to ensure zoom is applied
-        let attempts = 0;
-        const maxAttempts = 15;
-        const tryZoom = () => {
-          attempts++;
-          if (applyInitialZoom()) {
-            console.log(`Initial zoom applied successfully after ${attempts} attempts`);
-          } else if (attempts < maxAttempts) {
-            setTimeout(tryZoom, 300);
-          } else {
-            console.log('Max attempts reached for initial zoom');
-          }
-        };
+    //     let attempts = 0;
+    //     const maxAttempts = 15;
+    //     const tryZoom = () => {
+    //       attempts++;
+    //       if (applyInitialZoom()) {
+    //         console.log(`Initial zoom applied successfully after ${attempts} attempts`);
+    //       } else if (attempts < maxAttempts) {
+    //         setTimeout(tryZoom, 300);
+    //       } else {
+    //         console.log('Max attempts reached for initial zoom');
+    //       }
+    //     };
         
-        // Start trying after initialization
-        setTimeout(tryZoom, 500);
+    //     // Start trying after initialization
+    //     setTimeout(tryZoom, 500);
 
-      } catch (error) {
-        console.error('KeyShotXR initialization error:', error);
-      }
-    }
+    //   } catch (error) {
+    //     console.error('KeyShotXR initialization error:', error);
+    //   }
+    // }
 
     function zoomIn() {
       console.log('Zoom in clicked');
