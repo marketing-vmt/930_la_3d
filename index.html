@@ -183,16 +183,14 @@
           isIBooksWidget
         );
 
-        // Apply initial zoom using the correct KeyshotXR API
+        // Simple initial zoom setup
         const applyInitialZoom = () => {
           if (keyshotXR && typeof keyshotXR.T === 'function') {
-            // T() is the zoom method, set to high zoom for close-up view
-            keyshotXR.T(8);
-            console.log('Initial zoom applied: 2.8x using T() method');
+            keyshotXR.T(5);
+            console.log('Initial zoom applied: 5x using T() method');
             return true;
           } else if (keyshotXR) {
             console.log('KeyshotXR object exists but T method not available yet');
-            console.log('Available methods:', Object.getOwnPropertyNames(keyshotXR));
             return false;
           } else {
             console.log('KeyshotXR object not ready yet');
@@ -201,54 +199,24 @@
         };
 
         // Try multiple times to ensure zoom is applied
-    //     let attempts = 0;
-    //     const maxAttempts = 15;
-    //     const tryZoom = () => {
-    //       attempts++;
-    //       if (applyInitialZoom()) {
-    //         console.log(`Initial zoom applied successfully after ${attempts} attempts`);
-    //       } else if (attempts < maxAttempts) {
-    //         setTimeout(tryZoom, 300);
-    //       } else {
-    //         console.log('Max attempts reached for initial zoom');
-    //       }
-    //     };
+        let attempts = 0;
+        const maxAttempts = 15;
+        const tryZoom = () => {
+          attempts++;
+          if (applyInitialZoom()) {
+            console.log(`Initial zoom applied successfully after ${attempts} attempts`);
+          } else if (attempts < maxAttempts) {
+            setTimeout(tryZoom, 300);
+          } else {
+            console.log('Max attempts reached for initial zoom');
+          }
+        };
         
-    //     // Start trying after initialization
-    //     setTimeout(tryZoom, 500);
+        // Start trying after initialization
+        setTimeout(tryZoom, 500);
 
-    //   } catch (error) {
-    //     console.error('KeyShotXR initialization error:', error);
-    //   }
-    // }
-
-    function zoomIn() {
-      console.log('Zoom in clicked');
-      if (keyshotXR && typeof keyshotXR.T === 'function' && typeof keyshotXR.w === 'function') {
-        const currentZoom = keyshotXR.w();
-        const newZoom = currentZoom * 1.3;
-        keyshotXR.T(newZoom);
-        console.log(`Zoomed in from ${currentZoom.toFixed(2)} to ${newZoom.toFixed(2)}`);
-      } else {
-        console.log('KeyshotXR zoom methods not available');
-        if (keyshotXR) {
-          console.log('Available methods:', Object.getOwnPropertyNames(keyshotXR));
-        }
-      }
-    }
-
-    function zoomOut() {
-      console.log('Zoom out clicked');
-      if (keyshotXR && typeof keyshotXR.T === 'function' && typeof keyshotXR.w === 'function') {
-        const currentZoom = keyshotXR.w();
-        const newZoom = currentZoom * 0.7;
-        keyshotXR.T(newZoom);
-        console.log(`Zoomed out from ${currentZoom.toFixed(2)} to ${newZoom.toFixed(2)}`);
-      } else {
-        console.log('KeyshotXR zoom methods not available');
-        if (keyshotXR) {
-          console.log('Available methods:', Object.getOwnPropertyNames(keyshotXR));
-        }
+      } catch (error) {
+        console.error('KeyShotXR initialization error:', error);
       }
     }
 
@@ -288,12 +256,5 @@
 </head>
 <body>
   <div id="KeyShotXR"></div>
-
-  <div class="floating-controls">
-    <button class="circle-button" onclick="zoomIn()" title="Zoom In">+</button>
-    <button class="circle-button" onclick="zoomOut()" title="Zoom Out">−</button>
-  </div>
-
-  <button class="close-button" onclick="closeViewer()" title="Close">×</button>
 </body>
 </html>
