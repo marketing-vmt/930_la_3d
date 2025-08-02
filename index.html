@@ -48,7 +48,7 @@
         height: 100vh;
         max-width: 100vw;
         max-height: 100vh;
-        object-fit: contain; /* ensures full object is visible */
+        object-fit: contain;
         background: transparent;
       }
     }
@@ -75,13 +75,14 @@
       const uMouseSensitivity = isMobile ? -0.08 : -0.055;
       const vMouseSensitivity = isMobile ? 0.15 : 0.125;
 
-      // Use let here so we can adjust for mobile
-      let uStartIndex = 8;  // Desktop start
-      let vStartIndex = 10; // Desktop start
+      // Desktop default start
+      let uStartIndex = 8;
+      let vStartIndex = 10;
 
+      // Mobile-specific centering
       if (isMobile) {
-        uStartIndex = 12; // More centered horizontally
-        vStartIndex = 8;  // Lower tilt
+        uStartIndex = 10; // Adjust left/right
+        vStartIndex = 9;  // Adjust up/down
       }
 
       const minZoom = 0.3;
@@ -113,7 +114,7 @@
           uMouseSensitivity,
           vMouseSensitivity,
           uStartIndex,
-          vStartIndex, // now mobile uses adjusted start
+          vStartIndex, // now uses mobile-centered start if mobile
           minZoom,
           maxZoom,
           rotationDamping,
