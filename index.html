@@ -212,12 +212,17 @@
             keyshotXR.T(3.5);
           }
         }, 100);
+        
+        if (isMobile) {
+          uStartIndex = 10; // horizontal angle
+          vStartIndex = 10; // vertical angle
+        }
 
         // Adjust zoom for mobile
         if (isMobile) {
           setTimeout(() => {
             if (keyshotXR && typeof keyshotXR.T === 'function') {
-              keyshotXR.T(2.5); // Zoom out a bit for mobile
+              keyshotXR.T(1.2); // Zoom out a bit for mobile
             }
           }, 300);
         }
