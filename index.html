@@ -159,7 +159,7 @@
       const uStartIndex = 8;
       const vStartIndex = 10;
       const minZoom = 0.3;
-      const maxZoom = 2;
+      const maxZoom = 3;
       const rotationDamping = 0.90;
       const downScaleToBrowser = false;
       const addDownScaleGUIButton = false;
@@ -207,7 +207,7 @@
         // Set initial zoom to 3.5x when KeyshotXR is ready
         setTimeout(() => {
           if (keyshotXR && typeof keyshotXR.T === 'function') {
-            keyshotXR.T(1);
+            keyshotXR.T(2);
             console.log('Initial zoom set to 3.5x');
           } else {
             console.log('KeyshotXR T method not ready yet');
