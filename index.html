@@ -75,12 +75,13 @@
       const uMouseSensitivity = isMobile ? -0.08 : -0.055;
       const vMouseSensitivity = isMobile ? 0.15 : 0.125;
 
-      // Different starting frame for mobile
-      let uStartIndex = 8;  // Desktop
-      let vStartIndex = 10; // Desktop
+      // Use let here so we can adjust for mobile
+      let uStartIndex = 8;  // Desktop start
+      let vStartIndex = 10; // Desktop start
+
       if (isMobile) {
         uStartIndex = 12; // More centered horizontally
-        vStartIndex = 8;  // Lower vertically
+        vStartIndex = 8;  // Lower tilt
       }
 
       const minZoom = 0.3;
@@ -112,7 +113,7 @@
           uMouseSensitivity,
           vMouseSensitivity,
           uStartIndex,
-          vStartIndex,
+          vStartIndex, // now mobile uses adjusted start
           minZoom,
           maxZoom,
           rotationDamping,
