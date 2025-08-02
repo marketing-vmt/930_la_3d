@@ -29,12 +29,13 @@
       background: transparent;
     }
 
-    /* Mobile-specific centering and sizing */
+    /* Mobile-specific centering and scaling fix */
     @media (max-width: 768px) {
       html, body {
         position: fixed;
         width: 100%;
         height: 100%;
+        background: black;
       }
 
       #KeyShotXR {
@@ -42,10 +43,11 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        width: 95vw;
-        height: 95vw;
-        max-width: 95vh;
-        max-height: 95vh;
+        width: 100vw;
+        height: 100vh;
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain; /* ensures full object fits */
       }
     }
 
@@ -204,15 +206,21 @@
           isIBooksWidget
         );
 
-        // Set initial zoom to 3.5x when KeyshotXR is ready
+        // Set initial zoom for desktop
         setTimeout(() => {
           if (keyshotXR && typeof keyshotXR.T === 'function') {
             keyshotXR.T(3.5);
-            console.log('Initial zoom set to 3.5x');
-          } else {
-            console.log('KeyshotXR T method not ready yet');
           }
         }, 100);
+
+        // Adjust zoom for mobile
+        if (isMobile) {
+          setTimeout(() => {
+            if (keyshotXR && typeof keyshotXR.T === 'function') {
+              keyshotXR.T(2.5); // Zoom out a bit for mobile
+            }
+          }, 300);
+        }
 
       } catch (error) {
         console.error('KeyShotXR initialization error:', error);
@@ -223,7 +231,6 @@
       if (window.opener) {
         window.close();
       } else {
-        // Alternative for when window.close() doesn't work
         window.location.href = 'about:blank';
       }
     }
