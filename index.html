@@ -155,8 +155,15 @@
       const vCount = 20;
       const uWrap = true;
       const vWrap = false;
+      let uStartIndex = 8;
+      let vStartIndex = 10;
 
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      if (isMobile) {
+        uStartIndex = 10; // adjust horizontal rotation
+        vStartIndex = 8;  // adjust vertical tilt
+      }
+
       const uMouseSensitivity = isMobile ? -0.08 : -0.055;
       const vMouseSensitivity = isMobile ? 0.15 : 0.125;
 
