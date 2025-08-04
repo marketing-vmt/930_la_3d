@@ -1,36 +1,410 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes" />
   <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
   <meta name="author" content="Kaif">
-  <title>Delta 930 La</title>
+  <meta name="description" content="Interactive 3D viewer for Delta 930 La - Explore the product in 360° with zoom and rotation controls">
+  <meta name="keywords" content="Delta 930 La, 3D viewer, product visualization, interactive">
+  <title>Delta 930 La - Interactive 3D Viewer</title>
 
   <style>
+    :root {
+      --primary-color: #2563eb;
+      --secondary-color: #1e40af;
+      --accent-color: #3b82f6;
+      --text-light: #ffffff;
+      --text-dark: #1f2937;
+      --bg-overlay: rgba(0, 0, 0, 0.7);
+      --bg-glass: rgba(255, 255, 255, 0.1);
+      --border-glass: rgba(255, 255, 255, 0.2);
+      --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-medium: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     html, body {
       margin: 0;
       padding: 0;
-      background: black;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
       width: 100%;
       height: 100%;
       overflow: hidden;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      color: var(--text-light);
+    }
+
+    /* Loading Screen */
+    .loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    .loading-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .loading-spinner {
+      width: 60px;
+      height: 60px;
+      border: 4px solid var(--border-glass);
+      border-top: 4px solid var(--primary-color);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+
+    .loading-text {
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--text-light);
+      opacity: 0.8;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Main Viewer Container */
+    .viewer-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     #KeyShotXR {
       display: block;
-      width: 100%;
-      height: auto;
-      max-width: 100vw;
-      max-height: 100vh;
-      aspect-ratio: 1 / 1;
-      margin: auto;
       background: transparent;
+      border-radius: 12px;
+      box-shadow: var(--shadow-medium);
+      transition: var(--transition-smooth);
     }
 
-    /* Mobile-specific centering and sizing */
-    @media (max-width: 768px) {
+    /* Header */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: var(--bg-overlay);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border-glass);
+      padding: 15px 20px;
+      z-index: 1000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .product-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .product-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-light);
+      margin: 0;
+    }
+
+    .product-subtitle {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.7);
+      margin: 0;
+    }
+
+    .header-controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    /* Control Buttons */
+    .control-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      border: 1px solid var(--border-glass);
+      background: var(--bg-glass);
+      backdrop-filter: blur(10px);
+      color: var(--text-light);
+      cursor: pointer;
+      transition: var(--transition-bounce);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 600;
+      user-select: none;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .control-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .control-btn:hover {
+      background: var(--accent-color);
+      border-color: var(--primary-color);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-medium);
+    }
+
+    .control-btn:hover::before {
+      left: 100%;
+    }
+
+    .control-btn:active {
+      transform: translateY(0);
+    }
+
+    .close-btn {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+
+    .close-btn:hover {
+      background: #ef4444;
+      border-color: #dc2626;
+    }
+
+    /* Floating Controls */
+    .floating-controls {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 1000;
+    }
+
+    .zoom-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: var(--bg-overlay);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border-glass);
+      border-radius: 16px;
+      padding: 12px;
+    }
+
+    .zoom-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      border: 1px solid var(--border-glass);
+      background: var(--bg-glass);
+      color: var(--text-light);
+      cursor: pointer;
+      transition: var(--transition-bounce);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 700;
+      user-select: none;
+    }
+
+    .zoom-btn:hover {
+      background: var(--accent-color);
+      transform: scale(1.1);
+    }
+
+    .zoom-btn:active {
+      transform: scale(0.95);
+    }
+
+    /* Help Panel */
+    .help-panel {
+      position: fixed;
+      bottom: 30px;
+      left: 30px;
+      background: var(--bg-overlay);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border-glass);
+      border-radius: 16px;
+      padding: 20px;
+      max-width: 300px;
+      z-index: 1000;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: var(--transition-smooth);
+    }
+
+    .help-panel.visible {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .help-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 0 0 12px 0;
+      color: var(--text-light);
+    }
+
+    .help-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .help-icon {
+      width: 20px;
+      height: 20px;
+      background: var(--accent-color);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    /* Error State */
+    .error-state {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      background: var(--bg-overlay);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 16px;
+      padding: 40px;
+      max-width: 400px;
+      display: none;
+    }
+
+    .error-icon {
+      font-size: 48px;
+      color: #ef4444;
+      margin-bottom: 16px;
+    }
+
+    .error-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin: 0 0 8px 0;
+      color: var(--text-light);
+    }
+
+    .error-message {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.7);
+      margin: 0 0 20px 0;
+      line-height: 1.5;
+    }
+
+    .retry-btn {
+      background: var(--primary-color);
+      border: none;
+      border-radius: 8px;
+      padding: 12px 24px;
+      color: var(--text-light);
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+
+    .retry-btn:hover {
+      background: var(--secondary-color);
+    }
+
+    /* Responsive Design */
+    
+    /* Desktop (1200px+) */
+    @media (min-width: 1200px) {
+      #KeyShotXR {
+        width: min(80vh, 80vw);
+        height: min(80vh, 80vw);
+        max-width: 800px;
+        max-height: 800px;
+      }
+      
+      .product-title {
+        font-size: 28px;
+      }
+    }
+
+    /* Laptop/Desktop (768px - 1199px) */
+    @media (min-width: 768px) and (max-width: 1199px) {
+      #KeyShotXR {
+        width: min(85vh, 85vw);
+        height: min(85vh, 85vw);
+        max-width: 700px;
+        max-height: 700px;
+      }
+    }
+
+    /* Tablet Portrait (481px - 767px) */
+    @media (min-width: 481px) and (max-width: 767px) {
+      #KeyShotXR {
+        width: 90vw;
+        height: 90vw;
+        max-width: 90vh;
+        max-height: 90vh;
+      }
+
+      .header {
+        padding: 12px 16px;
+      }
+
+      .product-title {
+        font-size: 20px;
+      }
+
+      .floating-controls {
+        bottom: 20px;
+        right: 20px;
+      }
+
+      .help-panel {
+        bottom: 20px;
+        left: 20px;
+        max-width: 250px;
+      }
+    }
+
+    /* Mobile (320px - 480px) */
+    @media (max-width: 480px) {
       html, body {
         position: fixed;
         width: 100%;
@@ -38,99 +412,121 @@
       }
 
       #KeyShotXR {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
         width: 95vw;
         height: 95vw;
         max-width: 95vh;
         max-height: 95vh;
       }
-    }
 
-    .circle-button {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      font-size: 26px;
-      font-weight: bold;
-      border: 2px solid white;
-      color: white;
-      background: rgba(0, 0, 0, 0.5);
-      cursor: pointer;
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      user-select: none;
-    }
-
-    .circle-button:hover {
-      background: rgba(255, 255, 255, 0.2);
-      color: #ff4444;
-      transform: scale(1.1);
-    }
-
-    .circle-button:active {
-      transform: scale(0.95);
-    }
-
-    .floating-controls {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      z-index: 999;
-    }
-
-    .close-button {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      width: 45px;
-      height: 45px;
-      border-radius: 50%;
-      font-size: 24px;
-      font-weight: bold;
-      border: 2px solid white;
-      color: white;
-      background: rgba(0, 0, 0, 0.5);
-      cursor: pointer;
-      z-index: 999;
-      transition: all 0.3s ease;
-      user-select: none;
-    }
-
-    .close-button:hover {
-      background: rgba(255, 255, 255, 0.2);
-      color: #ff4444;
-      transform: scale(1.1);
-    }
-
-    .close-button:active {
-      transform: scale(0.95);
-    }
-
-    @media (max-width: 480px) {
-      .circle-button {
-        width: 44px;
-        height: 44px;
-        font-size: 22px;
+      .header {
+        padding: 10px 15px;
       }
 
-      .close-button {
+      .product-title {
+        font-size: 18px;
+      }
+
+      .product-subtitle {
+        font-size: 12px;
+      }
+
+      .control-btn {
         width: 40px;
         height: 40px;
-        font-size: 22px;
+        font-size: 16px;
       }
 
       .floating-controls {
         bottom: 15px;
         right: 15px;
-        gap: 12px;
+        gap: 10px;
+      }
+
+      .zoom-controls {
+        padding: 10px;
+        gap: 6px;
+      }
+
+      .zoom-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 18px;
+      }
+
+      .help-panel {
+        bottom: 15px;
+        left: 15px;
+        max-width: 200px;
+        padding: 15px;
+      }
+
+      .help-title {
+        font-size: 14px;
+      }
+
+      .help-item {
+        font-size: 12px;
+      }
+    }
+
+    /* Landscape Mobile */
+    @media (max-width: 767px) and (orientation: landscape) {
+      #KeyShotXR {
+        width: 85vh;
+        height: 85vh;
+        max-width: 85vw;
+        max-height: 85vw;
+      }
+
+      .header {
+        padding: 8px 15px;
+      }
+
+      .floating-controls {
+        bottom: 10px;
+        right: 15px;
+      }
+
+      .help-panel {
+        bottom: 10px;
+        left: 15px;
+      }
+    }
+
+    /* High DPI Displays */
+    @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+      .control-btn, .zoom-btn {
+        border-width: 0.5px;
+      }
+    }
+
+    /* Accessibility */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* Focus styles for keyboard navigation */
+    .control-btn:focus,
+    .zoom-btn:focus,
+    .retry-btn:focus {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 2px;
+    }
+
+    /* Print styles */
+    @media print {
+      .header,
+      .floating-controls,
+      .help-panel {
+        display: none;
+      }
+      
+      body {
+        background: white;
       }
     }
   </style>
@@ -138,12 +534,31 @@
   <script type="text/javascript" src="Delta 930 kaif.147/files/KeyShotXR.js"></script>
   <script type="text/javascript">
     var keyshotXR;
+    var isHelpVisible = false;
+    var currentZoom = 1;
 
+    // Initialize KeyShotXR
     function initKeyShotXR() {
       const nameOfDiv = "KeyShotXR";
       const folderName = "Delta 930 kaif.147";
 
-      const viewerSize = Math.min(window.innerWidth * 0.95, window.innerHeight * 0.95);
+      // Calculate optimal viewer size based on screen
+      const screenWidth = window.innerWidth;
+      const screenHeight = window.innerHeight;
+      const headerHeight = 70;
+      const availableHeight = screenHeight - headerHeight - 60; // Account for header and margins
+      
+      let viewerSize;
+      if (screenWidth >= 1200) {
+        viewerSize = Math.min(screenWidth * 0.8, availableHeight * 0.9, 800);
+      } else if (screenWidth >= 768) {
+        viewerSize = Math.min(screenWidth * 0.85, availableHeight * 0.9, 700);
+      } else if (screenWidth >= 481) {
+        viewerSize = Math.min(screenWidth * 0.9, availableHeight * 0.9);
+      } else {
+        viewerSize = Math.min(screenWidth * 0.95, availableHeight * 0.95);
+      }
+
       const viewPortWidth = viewerSize;
       const viewPortHeight = viewerSize;
       const backgroundColor = "transparent";
@@ -152,20 +567,23 @@
       const uWrap = true;
       const vWrap = false;
 
-      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      // Enhanced mobile detection
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                       (navigator.maxTouchPoints && navigator.maxTouchPoints > 2);
+      
       const uMouseSensitivity = isMobile ? -0.08 : -0.055;
       const vMouseSensitivity = isMobile ? 0.15 : 0.125;
 
       const uStartIndex = 8;
       const vStartIndex = 10;
       const minZoom = 0.3;
-      const maxZoom = 3;
+      const maxZoom = 5;
       const rotationDamping = 0.96;
       const downScaleToBrowser = false;
       const addDownScaleGUIButton = false;
       const downloadOnInteraction = false;
       const imageExtension = "webp";
-      const showLoading = true;
+      const showLoading = false; // We handle loading ourselves
       const loadingIcon = "ba.png";
       const allowFullscreen = true;
       const uReverse = false;
@@ -204,18 +622,95 @@
           isIBooksWidget
         );
 
-        // Set initial zoom to 3.5x when KeyshotXR is ready
+        // Set initial zoom and hide loading screen
         setTimeout(() => {
           if (keyshotXR && typeof keyshotXR.T === 'function') {
-            keyshotXR.T(3.5);
-            console.log('Initial zoom set to 3.5x');
+            keyshotXR.T(1.5);
+            currentZoom = 1.5;
+            hideLoadingScreen();
+            console.log('KeyShotXR initialized successfully');
           } else {
-            console.log('KeyshotXR T method not ready yet');
+            console.log('KeyshotXR T method not ready, retrying...');
+            setTimeout(() => {
+              if (keyshotXR && typeof keyshotXR.T === 'function') {
+                keyshotXR.T(1.5);
+                currentZoom = 1.5;
+                hideLoadingScreen();
+              } else {
+                showErrorState();
+              }
+            }, 500);
           }
-        }, 100);
+        }, 200);
 
       } catch (error) {
         console.error('KeyShotXR initialization error:', error);
+        showErrorState();
+      }
+    }
+
+    // UI Control Functions
+    function hideLoadingScreen() {
+      const loadingScreen = document.querySelector('.loading-screen');
+      if (loadingScreen) {
+        loadingScreen.classList.add('hidden');
+        setTimeout(() => {
+          loadingScreen.style.display = 'none';
+        }, 500);
+      }
+    }
+
+    function showErrorState() {
+      hideLoadingScreen();
+      const errorState = document.querySelector('.error-state');
+      if (errorState) {
+        errorState.style.display = 'block';
+      }
+    }
+
+    function toggleHelp() {
+      const helpPanel = document.querySelector('.help-panel');
+      isHelpVisible = !isHelpVisible;
+      
+      if (isHelpVisible) {
+        helpPanel.classList.add('visible');
+      } else {
+        helpPanel.classList.remove('visible');
+      }
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+          console.log('Error attempting to enable fullscreen:', err);
+        });
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    function zoomIn() {
+      if (keyshotXR && typeof keyshotXR.T === 'function') {
+        currentZoom = Math.min(currentZoom * 1.2, 5);
+        keyshotXR.T(currentZoom);
+      }
+    }
+
+    function zoomOut() {
+      if (keyshotXR && typeof keyshotXR.T === 'function') {
+        currentZoom = Math.max(currentZoom / 1.2, 0.3);
+        keyshotXR.T(currentZoom);
+      }
+    }
+
+    function resetView() {
+      if (keyshotXR && typeof keyshotXR.T === 'function') {
+        currentZoom = 1.5;
+        keyshotXR.T(currentZoom);
+        // Reset rotation if method exists
+        if (typeof keyshotXR.reset === 'function') {
+          keyshotXR.reset();
+        }
       }
     }
 
@@ -223,18 +718,35 @@
       if (window.opener) {
         window.close();
       } else {
-        // Alternative for when window.close() doesn't work
-        window.location.href = 'about:blank';
+        // Show confirmation dialog
+        if (confirm('Are you sure you want to close the viewer?')) {
+          window.location.href = 'about:blank';
+        }
       }
     }
 
-    // Event listeners
-    window.addEventListener("load", initKeyShotXR);
-    window.addEventListener("resize", () => {
+    function retryLoad() {
+      location.reload();
+    }
+
+    // Event Listeners
+    window.addEventListener("load", () => {
+      initKeyShotXR();
+      
+      // Auto-hide help panel after 5 seconds
+      setTimeout(() => {
+        if (isHelpVisible) {
+          toggleHelp();
+        }
+      }, 5000);
+    });
+
+    window.addEventListener("resize", debounce(() => {
       if (keyshotXR && typeof keyshotXR.resize === 'function') {
         keyshotXR.resize();
       }
-    });
+    }, 250));
+
     window.addEventListener("orientationchange", () => {
       setTimeout(() => {
         if (keyshotXR && typeof keyshotXR.resize === 'function') {
@@ -243,7 +755,39 @@
       }, 100);
     });
 
-    // Prevent context menu and multi-touch
+    // Keyboard navigation
+    document.addEventListener("keydown", (e) => {
+      switch(e.key) {
+        case 'h':
+        case 'H':
+          toggleHelp();
+          break;
+        case 'f':
+        case 'F':
+          toggleFullscreen();
+          break;
+        case '+':
+        case '=':
+          e.preventDefault();
+          zoomIn();
+          break;
+        case '-':
+          e.preventDefault();
+          zoomOut();
+          break;
+        case 'r':
+        case 'R':
+          resetView();
+          break;
+        case 'Escape':
+          if (isHelpVisible) {
+            toggleHelp();
+          }
+          break;
+      }
+    });
+
+    // Prevent context menu and handle multi-touch
     document.addEventListener("contextmenu", e => e.preventDefault());
     document.addEventListener("touchstart", e => { 
       if (e.touches.length > 1) e.preventDefault(); 
@@ -251,9 +795,90 @@
     document.addEventListener("touchmove", e => { 
       if (e.touches.length > 1) e.preventDefault(); 
     }, { passive: false });
+
+    // Utility function for debouncing
+    function debounce(func, wait) {
+      let timeout;
+      return function executedFunction(...args) {
+        const later = () => {
+          clearTimeout(timeout);
+          func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+      };
+    }
+
+    // Performance monitoring
+    window.addEventListener('load', () => {
+      if ('performance' in window) {
+        const loadTime = performance.timing.loadEventEnd - performance.timing.navigationStart;
+        console.log('Page load time:', loadTime + 'ms');
+      }
+    });
   </script>
 </head>
 <body>
-  <div id="KeyShotXR"></div>
+  <!-- Loading Screen -->
+  <div class="loading-screen">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Loading 3D Viewer...</div>
+  </div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="product-info">
+      <h1 class="product-title">Delta 930 La</h1>
+      <p class="product-subtitle">Interactive 3D Product Viewer</p>
+    </div>
+    <div class="header-controls">
+      <button class="control-btn" onclick="toggleHelp()" title="Help (H)" aria-label="Toggle help">?</button>
+      <button class="control-btn" onclick="toggleFullscreen()" title="Fullscreen (F)" aria-label="Toggle fullscreen">⛶</button>
+      <button class="control-btn close-btn" onclick="closeViewer()" title="Close" aria-label="Close viewer">×</button>
+    </div>
+  </header>
+
+  <!-- Main Viewer -->
+  <div class="viewer-container">
+    <div id="KeyShotXR" role="img" aria-label="Interactive 3D model of Delta 930 La"></div>
+    
+    <!-- Error State -->
+    <div class="error-state">
+      <div class="error-icon">⚠️</div>
+      <h2 class="error-title">Failed to Load 3D Viewer</h2>
+      <p class="error-message">The 3D model could not be loaded. Please check your internet connection and try again.</p>
+      <button class="retry-btn" onclick="retryLoad()">Retry</button>
+    </div>
+  </div>
+
+  <!-- Floating Controls -->
+  <div class="floating-controls">
+    <div class="zoom-controls">
+      <button class="zoom-btn" onclick="zoomIn()" title="Zoom In (+)" aria-label="Zoom in">+</button>
+      <button class="zoom-btn" onclick="resetView()" title="Reset View (R)" aria-label="Reset view">⌂</button>
+      <button class="zoom-btn" onclick="zoomOut()" title="Zoom Out (-)" aria-label="Zoom out">−</button>
+    </div>
+  </div>
+
+  <!-- Help Panel -->
+  <div class="help-panel visible">
+    <h3 class="help-title">How to Use</h3>
+    <div class="help-item">
+      <div class="help-icon">🖱️</div>
+      <span>Drag to rotate the model</span>
+    </div>
+    <div class="help-item">
+      <div class="help-icon">🔍</div>
+      <span>Scroll or pinch to zoom</span>
+    </div>
+    <div class="help-item">
+      <div class="help-icon">⌨️</div>
+      <span>Press H for help, F for fullscreen</span>
+    </div>
+    <div class="help-item">
+      <div class="help-icon">📱</div>
+      <span>Use touch gestures on mobile</span>
+    </div>
+  </div>
 </body>
 </html>
