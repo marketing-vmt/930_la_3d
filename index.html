@@ -429,16 +429,16 @@
         // Set initial zoom and hide loading screen
         setTimeout(() => {
           if (keyshotXR && typeof keyshotXR.T === 'function') {
-            keyshotXR.T(1.5);
-            currentZoom = 1.5;
+            keyshotXR.T(2);
+            currentZoom = 2;
             hideLoadingScreen();
             console.log('KeyShotXR initialized successfully');
           } else {
             console.log('KeyshotXR T method not ready, retrying...');
             setTimeout(() => {
               if (keyshotXR && typeof keyshotXR.T === 'function') {
-                keyshotXR.T(1.5);
-                currentZoom = 1.5;
+                keyshotXR.T(2);
+                currentZoom = 2;
                 hideLoadingScreen();
               } else {
                 showErrorState();
