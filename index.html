@@ -126,41 +126,24 @@
     .zoom-btn {
       width: 48px;
       height: 48px;
-      border-radius: 12px;
-      border: 1px solid var(--border-glass);
-      background: var(--bg-glass);
-      color: var(--text-light);
+      border-radius: 50%;
+      border: 2px solid white;
+      background: rgba(0, 0, 0, 0.5);
+      color: white;
       cursor: pointer;
-      transition: var(--transition-bounce);
+      transition: all 0.3s ease;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 20px;
-      font-weight: 700;
+      font-weight: bold;
       user-select: none;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .zoom-btn::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-      transition: left 0.5s ease;
     }
 
     .zoom-btn:hover {
-      background: var(--accent-color);
+      background: rgba(255, 255, 255, 0.2);
+      color: #ff4444;
       transform: scale(1.1);
-      box-shadow: var(--shadow-medium);
-    }
-
-    .zoom-btn:hover::before {
-      left: 100%;
     }
 
     .zoom-btn:active {
@@ -245,7 +228,16 @@
         width: 80px;
         height: 80px;
         font-size: 36px;
-        border-radius: 20px;
+        border-radius: 50%;
+        border: 2px solid white;
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+      }
+      
+      .zoom-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        color: #ff4444;
+        transform: scale(1.1);
       }
       
       .loading-spinner {
@@ -284,7 +276,16 @@
         width: 70px;
         height: 70px;
         font-size: 32px;
-        border-radius: 18px;
+        border-radius: 50%;
+        border: 2px solid white;
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+      }
+      
+      .zoom-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        color: #ff4444;
+        transform: scale(1.1);
       }
       
       .loading-spinner {
@@ -323,7 +324,16 @@
         width: 60px;
         height: 60px;
         font-size: 28px;
-        border-radius: 16px;
+        border-radius: 50%;
+        border: 2px solid white;
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+      }
+      
+      .zoom-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        color: #ff4444;
+        transform: scale(1.1);
       }
       
       .loading-spinner {
@@ -362,7 +372,16 @@
         width: 54px;
         height: 54px;
         font-size: 24px;
-        border-radius: 14px;
+        border-radius: 50%;
+        border: 2px solid white;
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+      }
+      
+      .zoom-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        color: #ff4444;
+        transform: scale(1.1);
       }
     }
 
@@ -391,7 +410,16 @@
         width: 48px;
         height: 48px;
         font-size: 20px;
-        border-radius: 12px;
+        border-radius: 50%;
+        border: 2px solid white;
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+      }
+      
+      .zoom-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        color: #ff4444;
+        transform: scale(1.1);
       }
     }
 
@@ -419,6 +447,16 @@
         width: 44px;
         height: 44px;
         font-size: 18px;
+        border-radius: 50%;
+        border: 2px solid white;
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+      }
+      
+      .zoom-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        color: #ff4444;
+        transform: scale(1.1);
       }
     }
 
@@ -446,6 +484,16 @@
         width: 40px;
         height: 40px;
         font-size: 16px;
+        border-radius: 50%;
+        border: 2px solid white;
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+      }
+      
+      .zoom-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        color: #ff4444;
+        transform: scale(1.1);
       }
     }
 
@@ -473,6 +521,16 @@
         width: 38px;
         height: 38px;
         font-size: 15px;
+        border-radius: 50%;
+        border: 2px solid white;
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+      }
+      
+      .zoom-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        color: #ff4444;
+        transform: scale(1.1);
       }
     }
 
@@ -506,6 +564,16 @@
         width: 36px;
         height: 36px;
         font-size: 14px;
+        border-radius: 50%;
+        border: 2px solid white;
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+      }
+      
+      .zoom-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        color: #ff4444;
+        transform: scale(1.1);
       }
     }
 
@@ -539,6 +607,16 @@
         width: 34px;
         height: 34px;
         font-size: 13px;
+        border-radius: 50%;
+        border: 2px solid white;
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+      }
+      
+      .zoom-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        color: #ff4444;
+        transform: scale(1.1);
       }
     }
 
@@ -572,6 +650,16 @@
         width: 32px;
         height: 32px;
         font-size: 12px;
+        border-radius: 50%;
+        border: 2px solid white;
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+      }
+      
+      .zoom-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        color: #ff4444;
+        transform: scale(1.1);
       }
     }
 
@@ -605,6 +693,16 @@
         width: 28px;
         height: 28px;
         font-size: 11px;
+        border-radius: 50%;
+        border: 2px solid white;
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+      }
+      
+      .zoom-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        color: #ff4444;
+        transform: scale(1.1);
       }
     }
 
@@ -1075,3 +1173,4 @@
   </div>
 </body>
 </html>
+
