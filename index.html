@@ -273,18 +273,18 @@
       .floating-controls {
         bottom: 15px;
         right: 15px;
-        gap: 10px;
+        gap: 8px;
       }
 
       .zoom-controls {
-        padding: 10px;
-        gap: 6px;
+        padding: 8px;
+        gap: 4px;
       }
 
       .zoom-btn {
-        width: 44px;
-        height: 44px;
-        font-size: 18px;
+        width: 36px;
+        height: 36px;
+        font-size: 16px;
       }
     }
 
@@ -429,16 +429,16 @@
         // Set initial zoom and hide loading screen
         setTimeout(() => {
           if (keyshotXR && typeof keyshotXR.T === 'function') {
-            keyshotXR.T(2);
-            currentZoom = 2;
+            keyshotXR.T(1.5);
+            currentZoom = 1.5;
             hideLoadingScreen();
             console.log('KeyShotXR initialized successfully');
           } else {
             console.log('KeyshotXR T method not ready, retrying...');
             setTimeout(() => {
               if (keyshotXR && typeof keyshotXR.T === 'function') {
-                keyshotXR.T(2);
-                currentZoom = 2;
+                keyshotXR.T(1.5);
+                currentZoom = 1.5;
                 hideLoadingScreen();
               } else {
                 showErrorState();
